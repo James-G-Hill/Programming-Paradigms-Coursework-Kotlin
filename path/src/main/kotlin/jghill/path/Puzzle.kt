@@ -12,6 +12,11 @@ fun main(args: Array<String>) {
     val lineArray : List<String>? = board?.split(System.lineSeparator())
     val spaceArray : List<List<String>>? = lineArray?.map{s -> s.split(" ")}
     
+    var atZero: Boolean = false
+    
+    while(atZero) {
+        
+    }
     
 }
 
