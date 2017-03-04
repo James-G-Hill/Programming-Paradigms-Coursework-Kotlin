@@ -8,6 +8,11 @@ fun main(args: Array<String>) {
     val file = chooseFile()
     println(file ?: "No file selected.")
     
+    val board = file?.readText()
+    val lineArray : List<String>? = board?.split(System.lineSeparator())
+    val spaceArray : List<List<String>>? = lineArray?.map{s -> s.split(" ")}
+    
+    
 }
 
 fun chooseFile(): File? {
