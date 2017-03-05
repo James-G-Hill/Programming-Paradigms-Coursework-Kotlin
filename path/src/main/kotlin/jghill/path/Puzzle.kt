@@ -1,9 +1,8 @@
 package jghill.path
 
 import java.io.File
+import java.util.Stack
 import javax.swing.JFileChooser
-
-var atZero: Boolean = false
 
 /**
  *  The main function of the program.
@@ -20,12 +19,12 @@ fun main(args: Array<String>) {
     var currentCell: Cell = Cell(0, 0)
     val finalCell: Cell = Cell(lineArray.size - 1, spaceArray.size - 1)
     
-    var trail: MutableList<Cell> = arrayListOf()
+    var trail: Stack<Cell> = Stack()
     val visited: MutableList<Cell> = arrayListOf()
     
-    while(atZero) {
+    while(currentCell != finalCell) {
         
-        trail.add(currentCell)
+        trail.push(currentCell)
         visited.add(currentCell)
         
         val row = currentCell.rowNo
@@ -34,16 +33,39 @@ fun main(args: Array<String>) {
         val thisNumber: Int = getNumberAtCell(currentCell, spaceArray)
         
         if(moveIsValid(currentCell, spaceArray, 'R', thisNumber)) {
+            currentCell.Right = true
             currentCell = Cell(row, col + thisNumber)
         } else if (moveIsValid(currentCell, spaceArray, 'D', thisNumber)) {
+            currentCell.Down = true
             currentCell = Cell(row + thisNumber, col)
         } else if (moveIsValid(currentCell, spaceArray, 'L', thisNumber)) {
+            currentCell.Left = true
             currentCell = Cell(row, col - thisNumber)
         } else if (moveIsValid(currentCell, spaceArray, 'U', thisNumber)) {
+            currentCell.Up = true
             currentCell = Cell(row - thisNumber, col)
+        } else {
+            trail.pop()
+            currentCell = trail.last()
         }
         
     }
+    
+    printFinalResult(trail)
+    
+}
+
+/**
+ *  Print the final results of the program.
+ */
+fun printFinalResult(result: Stack<Cell>) {
+    
+    var output: String = ")"
+    while(result.size > 0) {
+        val c = result.pop()
+        output = "(" + c.rowNo + "," + c.colNo + ")" + output
+    }
+    println("(" + output)
     
 }
 
@@ -97,13 +119,10 @@ fun chooseFile(): File? {
     chooser.setVisible(true)
     
     when(theFileResult) {
-        
         JFileChooser.APPROVE_OPTION -> return chooser.getSelectedFile()
         JFileChooser.CANCEL_OPTION -> println("No longer choosing.")
         else -> println("Error: Unable to open the file.")
-        
     }
     
     return null
-    
 }
