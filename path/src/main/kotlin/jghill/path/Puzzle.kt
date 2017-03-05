@@ -3,6 +3,9 @@ package jghill.path
 import java.io.File
 import javax.swing.JFileChooser
 
+/**
+ *  The main function of the program.
+ */
 fun main(args: Array<String>) {
     
     val file = chooseFile()
@@ -14,12 +17,34 @@ fun main(args: Array<String>) {
     
     var atZero: Boolean = false
     
+    val currentCell: Cell = Cell(0, 0)
+    var trail: MutableList<Cell> = arrayListOf()
+    
     while(atZero) {
+        
+        trail.add(currentCell)
+        val thisNumber = getNumberAtCell(currentCell, spaceArray)
         
     }
     
 }
 
+/**
+ *  Added a function for returning the number at a given position in the
+ *  multi-dimensional array.
+ */
+fun getNumberAtCell(c: Cell, spaceArray: List<List<String>>?): Int? {
+    return spaceArray?.get(c.rowNo)?.get(c.colNo)?.toInt()
+}
+
+/**
+ *  A data class to represent a cell in the array of cells.
+ */
+data class Cell(val rowNo: Int, val colNo: Int)
+
+/**
+ *  A function for choosing the file containing the puzzle that must be solved.
+ */
 fun chooseFile(): File? {
     
     val chooser = JFileChooser()
