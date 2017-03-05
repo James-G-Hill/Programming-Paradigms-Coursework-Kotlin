@@ -17,7 +17,7 @@ fun main(args: Array<String>) {
     val lineArray : List<String> = board!!.split(System.lineSeparator())
     val spaceArray : List<List<String>> = lineArray.map{s -> s.split(" ")}
     
-    val currentCell: Cell = Cell(0, 0)
+    var currentCell: Cell = Cell(0, 0)
     val finalCell: Cell = Cell(lineArray.size - 1, spaceArray.size - 1)
     
     var trail: MutableList<Cell> = arrayListOf()
@@ -27,12 +27,20 @@ fun main(args: Array<String>) {
         
         trail.add(currentCell)
         visited.add(currentCell)
-        val thisNumber = getNumberAtCell(currentCell, spaceArray)
         
-        when() {
-            
-            
-            
+        val row = currentCell.rowNo
+        val col = currentCell.colNo
+        
+        val thisNumber: Int = getNumberAtCell(currentCell, spaceArray)
+        
+        if(moveIsValid(currentCell, spaceArray, 'R', thisNumber)) {
+            currentCell = Cell(row, col + thisNumber)
+        } else if (moveIsValid(currentCell, spaceArray, 'D', thisNumber)) {
+            currentCell = Cell(row + thisNumber, col)
+        } else if (moveIsValid(currentCell, spaceArray, 'L', thisNumber)) {
+            currentCell = Cell(row, col - thisNumber)
+        } else if (moveIsValid(currentCell, spaceArray, 'U', thisNumber)) {
+            currentCell = Cell(row - thisNumber, col)
         }
         
     }
@@ -45,15 +53,15 @@ fun main(args: Array<String>) {
 fun moveIsValid(
         c: Cell,
         spaceArray: List<List<String>>,
-        s: String,
+        s: Char,
         n: Int): Boolean {
     
     var valid: Boolean = false
     when(s) {
-        "R" -> if(!c.Right && (c.colNo + n) < spaceArray.size) valid = true
-        "D" -> if(!c.Down && (c.rowNo + n) < spaceArray.size) valid = true
-        "L" -> if(!c.Left && (c.colNo - n) >= 0) valid = true
-        "U" -> if(!c.Up && (c.rowNo + n) >= 0) valid = true
+        'R' -> if(!c.Right && (c.colNo + n) < spaceArray.size) valid = true
+        'D' -> if(!c.Down && (c.rowNo + n) < spaceArray.size) valid = true
+        'L' -> if(!c.Left && (c.colNo - n) >= 0) valid = true
+        'U' -> if(!c.Up && (c.rowNo + n) >= 0) valid = true
     }
     return valid
 }
@@ -62,8 +70,8 @@ fun moveIsValid(
  *  Added a function for returning the number at a given position in the
  *  multi-dimensional array.
  */
-fun getNumberAtCell(c: Cell, spaceArray: List<List<String>>?): Int? {
-    return spaceArray?.get(c.rowNo)?.get(c.colNo)?.toInt()
+fun getNumberAtCell(c: Cell, spaceArray: List<List<String>>?): Int {
+    return spaceArray!!.get(c.rowNo)?.get(c.colNo)?.toInt()
 }
 
 /**
@@ -75,7 +83,8 @@ data class Cell(
     var Right: Boolean = false,
     var Down: Boolean = false,
     var Left: Boolean = false,
-    var Up: Boolean = false)
+    var Up: Boolean = false
+)
 
 /**
  *  A function for choosing the file containing the puzzle that must be solved.
