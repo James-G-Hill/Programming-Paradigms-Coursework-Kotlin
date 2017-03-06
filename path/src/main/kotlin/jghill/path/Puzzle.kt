@@ -4,6 +4,9 @@ import java.io.File
 import java.util.Stack
 import javax.swing.JFileChooser
 
+var trail: Stack<Cell> = Stack()
+val visited: MutableList<Cell> = arrayListOf()
+
 /**
  *  The main function of the program.
  */
@@ -19,32 +22,57 @@ fun main(args: Array<String>) {
     var currentCell: Cell = Cell(0, 0)
     val finalCell: Cell = Cell(lineArray.size - 1, spaceArray.size - 1)
     
-    var trail: Stack<Cell> = Stack()
-    val visited: MutableList<Cell> = arrayListOf()
-    
     while(currentCell != finalCell) {
         
-        trail.push(currentCell)
-        visited.add(currentCell)
+        if(!trail.contains(currentCell)) {
+            trail.push(currentCell)
+            visited.add(currentCell)
+        }
         
         val row = currentCell.rowNo
         val col = currentCell.colNo
         
         val thisNumber: Int = getNumberAtCell(currentCell, spaceArray)
         
+        var nextCell: Cell
+        
         if(moveIsValid(currentCell, spaceArray, 'R', thisNumber)) {
             currentCell.Right = true
-            currentCell = Cell(row, col + thisNumber)
+            nextCell = Cell(row, col + thisNumber)
+            if (visited.contains(nextCell)) {
+                currentCell = visited.get(visited.indexOf(nextCell))
+            } else {
+                currentCell = nextCell
+            }
         } else if (moveIsValid(currentCell, spaceArray, 'D', thisNumber)) {
             currentCell.Down = true
-            currentCell = Cell(row + thisNumber, col)
+            nextCell = Cell(row + thisNumber, col)
+            if (visited.contains(nextCell)) {
+                currentCell = visited.get(visited.indexOf(nextCell))
+            } else {
+                currentCell = nextCell
+            }
         } else if (moveIsValid(currentCell, spaceArray, 'L', thisNumber)) {
             currentCell.Left = true
-            currentCell = Cell(row, col - thisNumber)
+            nextCell = Cell(row, col - thisNumber)
+            if (visited.contains(nextCell)) {
+                currentCell = visited.get(visited.indexOf(nextCell))
+            } else {
+                currentCell = nextCell
+            }
         } else if (moveIsValid(currentCell, spaceArray, 'U', thisNumber)) {
             currentCell.Up = true
-            currentCell = Cell(row - thisNumber, col)
+            nextCell = Cell(row - thisNumber, col)
+            if (visited.contains(nextCell)) {
+                currentCell = visited.get(visited.indexOf(nextCell))
+            } else {
+                currentCell = nextCell
+            }
         } else {
+            currentCell.Right = true
+            currentCell.Down = true
+            currentCell.Left = true
+            currentCell.Up = true
             trail.pop()
             currentCell = trail.last()
         }
@@ -60,7 +88,7 @@ fun main(args: Array<String>) {
  */
 fun printFinalResult(result: Stack<Cell>) {
     
-    var output: String = ")"
+    var output: String = "(9,9))"
     while(result.size > 0) {
         val c = result.pop()
         output = "(" + c.rowNo + "," + c.colNo + ")" + output
@@ -78,12 +106,15 @@ fun moveIsValid(
         s: Char,
         n: Int): Boolean {
     
-    var valid: Boolean = false
+    val row = c.rowNo
+    val col = c.colNo
+    
+    var valid: Boolean = true
     when(s) {
-        'R' -> if(!c.Right && (c.colNo + n) < spaceArray.size) valid = true
-        'D' -> if(!c.Down && (c.rowNo + n) < spaceArray.size) valid = true
-        'L' -> if(!c.Left && (c.colNo - n) >= 0) valid = true
-        'U' -> if(!c.Up && (c.rowNo + n) >= 0) valid = true
+        'R' -> if(c.Right || (col + n) >= spaceArray.size || visited.contains(Cell(row, col + n))) valid = false
+        'D' -> if(c.Down || (row + n) >= spaceArray.size || visited.contains(Cell(row + n, col))) valid = false
+        'L' -> if(c.Left || (col - n) < 0 || visited.contains(Cell(row, col - n))) valid = false
+        'U' -> if(c.Up || (row - n) < 0 || visited.contains(Cell(row - n, col))) valid = false
     }
     return valid
 }
@@ -106,7 +137,16 @@ data class Cell(
     var Down: Boolean = false,
     var Left: Boolean = false,
     var Up: Boolean = false
-)
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        
+        other as Cell
+        if (this.rowNo == other.rowNo && this.colNo == other.colNo) return true
+        
+        return false
+    }
+}
 
 /**
  *  A function for choosing the file containing the puzzle that must be solved.
