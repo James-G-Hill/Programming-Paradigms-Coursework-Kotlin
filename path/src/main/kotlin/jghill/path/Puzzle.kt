@@ -15,8 +15,16 @@ fun main(args: Array<String>) {
     val file = chooseFile()
     println(file ?: "No file selected.")
     
-    val board = file?.readText()
-    val lineArray : List<String> = board!!.split(System.lineSeparator())
+    if(file != null) {
+        solve(file)
+    }
+    
+}
+
+fun solve(file: File) {
+     
+    val board = file.readText()
+    val lineArray : List<String> = board.split(System.lineSeparator())
     val spaceArray : List<List<String>> = lineArray.map{s -> s.split(" ")}
     
     var currentCell: Cell = Cell(0, 0)
@@ -124,7 +132,7 @@ fun moveIsValid(
  *  multi-dimensional array.
  */
 fun getNumberAtCell(c: Cell, spaceArray: List<List<String>>?): Int {
-    return spaceArray!!.get(c.rowNo)?.get(c.colNo)?.toInt()
+    return spaceArray!!.get(c.rowNo).get(c.colNo).toInt()
 }
 
 /**
